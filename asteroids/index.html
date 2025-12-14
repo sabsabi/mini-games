@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asteroids - Classic 1979 Arcade Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-black text-white overflow-hidden">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold mb-2">ASTEROIDS</h1>
+            <p class="text-gray-400">Classic 1979 Arcade Game</p>
+        </header>
+
+        <!-- Game Container -->
+        <div class="flex flex-col items-center">
+            <!-- Score and Info Panel -->
+            <div class="w-full max-w-3xl mb-4 flex justify-between items-center bg-gray-900 p-4 rounded">
+                <div>
+                    <span class="text-sm text-gray-400">SCORE</span>
+                    <div class="text-2xl font-mono" id="score">0</div>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">LEVEL</span>
+                    <div class="text-2xl font-mono" id="level">1</div>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">LIVES</span>
+                    <div class="text-2xl font-mono" id="lives">3</div>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">HIGH SCORE</span>
+                    <div class="text-2xl font-mono" id="highScore">0</div>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+            <!-- Game Over Overlay -->
+            <div id="gameOverlay" class="hidden">
+                <div class="overlay-content">
+                    <h2 id="overlayTitle" class="text-5xl font-bold mb-4">ASTEROIDS</h2>
+                    <p id="overlayMessage" class="text-xl mb-6">Press SPACE to Start</p>
+                    <div class="text-gray-400 text-sm">
+                        <p>Arrow Keys: Rotate and Thrust</p>
+                        <p>Spacebar: Shoot</p>
+                        <p>P: Pause</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Info -->
+            <div class="mt-4 text-center text-sm text-gray-400">
+                <p><strong>Controls:</strong> ← → to rotate, ↑ for thrust, SPACEBAR to shoot, P to pause</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>Built by AISLE Partners using Claude Code</p>
+            <p class="mt-1">AISLE Partners. AI Strategy. Leverage. Execution.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

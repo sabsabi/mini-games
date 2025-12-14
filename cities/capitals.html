@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Capitals Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen gradient-purple flex items-center justify-center p-5">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-10">
+        <h1 class="text-5xl font-bold text-center text-gradient-purple mb-2">
+            World Capitals Quiz
+        </h1>
+        <p class="text-center text-gray-600 mb-8 text-lg">
+            Test your knowledge of world capitals!
+        </p>
+
+        <!-- Progress Bar -->
+        <div class="bg-gray-200 h-2.5 rounded-full mb-8 overflow-hidden">
+            <div class="progress-fill gradient-progress h-full w-0" id="progressFill"></div>
+        </div>
+
+        <!-- Score Display -->
+        <div class="text-center text-xl text-purple-700 font-bold mb-5">
+            Total Score: <span id="currentScore">0</span>
+        </div>
+
+        <!-- Quiz Content -->
+        <div id="quizContent">
+            <div class="mb-8">
+                <div class="text-purple-700 font-bold mb-2.5" id="questionNumber"></div>
+                <div class="text-2xl text-gray-800 mb-6 leading-relaxed" id="question"></div>
+                <div class="grid gap-4" id="answers"></div>
+
+                <!-- Fact Box -->
+                <div id="factBox" class="fact-box gradient-orange border-l-4 border-orange-500 p-5 rounded-lg mt-5">
+                    <div class="font-bold text-orange-700 mb-2 text-lg">Did you know?</div>
+                    <div class="text-gray-800 leading-relaxed" id="factText"></div>
+                </div>
+            </div>
+            <button
+                class="gradient-purple text-white border-none py-4 px-10 rounded-lg text-lg cursor-pointer block mx-auto mt-8 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                id="nextBtn"
+                disabled>
+                Next Question
+            </button>
+        </div>
+
+        <!-- Results Content -->
+        <div id="resultsContent" class="hidden text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-5">Round Complete!</h2>
+            <div class="text-6xl font-bold text-gradient-purple my-5" id="finalScore"></div>
+            <div class="text-2xl text-gray-800 my-5" id="scoreMessage"></div>
+            <button
+                class="gradient-green text-white border-none py-4 px-10 rounded-lg text-lg cursor-pointer block mx-auto mt-2.5 btn-primary btn-green"
+                id="continueBtn">
+                Continue (5 More Questions)
+            </button>
+            <button
+                class="gradient-red text-white border-none py-4 px-10 rounded-lg text-lg cursor-pointer block mx-auto mt-5 btn-primary btn-red"
+                id="restartBtn">
+                Start Over
+            </button>
+        </div>
+    </div>
+
+    <!-- Load questions from external file -->
+    <script src="capitals.js"></script>
+
+    <!-- Quiz logic -->
+    <script>
+        let usedQuestionIndices = [];
+        let currentRoundQuestions = [];
+        let currentQuestion = 0;
+        let totalScore = 0;
+        let roundScore = 0;
+        let selectedAnswer = null;
+
+        const questionEl = document.getElementById('question');
+        const questionNumberEl = document.getElementById('questionNumber');
+        const answersEl = document.getElementById('answers');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressFill = document.getElementById('progressFill');
+        const currentScoreEl = document.getElementById('currentScore');
+        const quizContent = document.getElementById('quizContent');
+        const resultsContent = document.getElementById('resultsContent');
+        const finalScoreEl = document.getElementById('finalScore');
+        const scoreMessageEl = document.getElementById('scoreMessage');
+        const restartBtn = document.getElementById('restartBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const factBox = document.getElementById('factBox');
+        const factText = document.getElementById('factText');
+
+        function selectRandomQuestions() {
+            const availableIndices = [];
+            for (let i = 0; i < allQuestions.length; i++) {
+                if (!usedQuestionIndices.includes(i)) {
+                    availableIndices.push(i);
+                }
+            }
+
+            if (availableIndices.length === 0) {
+                usedQuestionIndices = [];
+                for (let i = 0; i < allQuestions.length; i++) {
+                    availableIndices.push(i);
+                }
+            }
+
+            currentRoundQuestions = [];
+            const questionsToSelect = Math.min(5, availableIndices.length);
+
+            for (let i = 0; i < questionsToSelect; i++) {
+                const randomIndex = Math.floor(Math.random() * availableIndices.length);
+                const questionIndex = availableIndices[randomIndex];
+                currentRoundQuestions.push(allQuestions[questionIndex]);
+                usedQuestionIndices.push(questionIndex);
+                availableIndices.splice(randomIndex, 1);
+            }
+        }
+
+        function startNewRound() {
+            selectRandomQuestions();
+            currentQuestion = 0;
+            roundScore = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = currentRoundQuestions[currentQuestion];
+            questionNumberEl.textContent = `Question ${currentQuestion + 1} of ${currentRoundQuestions.length}`;
+            questionEl.textContent = question.question;
+            answersEl.innerHTML = '';
+            selectedAnswer = null;
+            nextBtn.disabled = true;
+
+            factBox.classList.remove('show');
+
+            question.answers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.className = 'answer-btn gradient-gray border-2 border-transparent p-4 rounded-lg text-lg cursor-pointer text-left';
+                button.textContent = answer;
+                button.addEventListener('click', () => selectAnswer(index));
+                answersEl.appendChild(button);
+            });
+
+            updateProgress();
+        }
+
+        function selectAnswer(index) {
+            if (selectedAnswer !== null) return;
+
+            selectedAnswer = index;
+            const buttons = answersEl.querySelectorAll('.answer-btn');
+            const correctAnswer = currentRoundQuestions[currentQuestion].correct;
+
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (i === selectedAnswer) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (selectedAnswer === correctAnswer) {
+                roundScore++;
+                totalScore++;
+                currentScoreEl.textContent = totalScore;
+            }
+
+            factText.textContent = currentRoundQuestions[currentQuestion].fact;
+            setTimeout(() => {
+                factBox.classList.add('show');
+            }, 300);
+
+            nextBtn.disabled = false;
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / currentRoundQuestions.length) * 100;
+            progressFill.style.width = progress + '%';
+        }
+
+        function showResults() {
+            quizContent.classList.add('hidden');
+            resultsContent.classList.remove('hidden');
+            finalScoreEl.textContent = `${roundScore}/${currentRoundQuestions.length}`;
+
+            let message = '';
+            if (roundScore === currentRoundQuestions.length) {
+                message = "Perfect! You're a geography master!";
+            } else if (roundScore >= currentRoundQuestions.length * 0.8) {
+                message = "Excellent! You know your capitals well!";
+            } else if (roundScore >= currentRoundQuestions.length * 0.6) {
+                message = "Good job! Keep learning!";
+            } else if (roundScore >= currentRoundQuestions.length * 0.4) {
+                message = "Not bad! Room for improvement!";
+            } else {
+                message = "Keep practicing! You'll get better!";
+            }
+
+            const remainingQuestions = allQuestions.length - usedQuestionIndices.length;
+            if (remainingQuestions > 0) {
+                message += ` Total Score: ${totalScore}`;
+                continueBtn.style.display = 'block';
+            } else {
+                message += ` Final Total Score: ${totalScore}`;
+                continueBtn.style.display = 'none';
+            }
+
+            scoreMessageEl.textContent = message;
+        }
+
+        function continueQuiz() {
+            quizContent.classList.remove('hidden');
+            resultsContent.classList.add('hidden');
+            startNewRound();
+        }
+
+        function restartQuiz() {
+            usedQuestionIndices = [];
+            totalScore = 0;
+            currentScoreEl.textContent = '0';
+            quizContent.classList.remove('hidden');
+            resultsContent.classList.add('hidden');
+            startNewRound();
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+            if (currentQuestion < currentRoundQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        continueBtn.addEventListener('click', continueQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Initialize the quiz
+        startNewRound();
+    </script>
+</body>
+</html>

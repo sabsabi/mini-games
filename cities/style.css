@@ -1,0 +1,95 @@
+/* Custom gradient backgrounds */
+.gradient-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-orange {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.gradient-green {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+}
+
+.gradient-red {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+.gradient-gray {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.gradient-progress {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Text gradient */
+.text-gradient-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Answer button states */
+.answer-btn {
+    transition: all 0.3s ease;
+}
+
+.answer-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-color: #667eea;
+}
+
+.answer-btn.correct {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    color: white;
+    border-color: #56ab2f;
+}
+
+.answer-btn.incorrect {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    color: white;
+    border-color: #eb3349;
+}
+
+.answer-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Fact box animation */
+.fact-box {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.5s ease;
+}
+
+.fact-box.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Button hover effects */
+.btn-primary {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-green:hover {
+    box-shadow: 0 5px 15px rgba(86, 171, 47, 0.4);
+}
+
+.btn-red:hover {
+    box-shadow: 0 5px 15px rgba(235, 51, 73, 0.4);
+}
+
+/* Progress bar animation */
+.progress-fill {
+    transition: width 0.3s ease;
+}

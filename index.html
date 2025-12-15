@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Minigames Showcase - AISLE Partners</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #5b21b6 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            color: white;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            display: block;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .header .tagline {
+            font-size: 1em;
+            opacity: 0.85;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            flex: 1;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .game-card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #f3f4f6;
+        }
+
+        .game-card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card h2 {
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1f2937;
+        }
+
+        .game-card p {
+            font-size: 1em;
+            color: #6b7280;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            height: 80px;
+            width: auto;
+        }
+
+        .footer-message {
+            max-width: 600px;
+        }
+
+        .footer-message h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .footer-message p {
+            color: #94a3b8;
+            line-height: 1.7;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .footer-tagline {
+            color: #a78bfa;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.85em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 40px 20px 30px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header .subtitle {
+                font-size: 1.1em;
+            }
+
+            .game-card-content {
+                padding: 20px;
+            }
+
+            .game-card h2 {
+                font-size: 1.4em;
+            }
+
+            .footer-logo {
+                height: 60px;
+                width: auto;
+            }
+
+            .footer-message h3 {
+                font-size: 1.1em;
+            }
+
+            .footer-message p {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <img src="assets/images/AisleProfile128x128.png" alt="AISLE Partners Logo" class="logo">
+        <h1>AI Minigames Showcase</h1>
+        <p class="subtitle">Mini games built lightning fast with AI-assisted development workflows</p>
+        <p class="tagline">AISLE Partners. AI Strategy. Leverage. Execution.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="games-grid">
+            <!-- Asteroids Card -->
+            <a href="asteroids/index.html" class="game-card">
+                <img src="assets/images/asteroids.png" alt="Asteroids Game" class="game-card-image">
+                <div class="game-card-content">
+                    <h2>Asteroids</h2>
+                    <p>Classic vector-based space shooter. Navigate your ship through an asteroid field, destroying rocks and avoiding collisions in this retro arcade masterpiece.</p>
+                </div>
+            </a>
+
+            <!-- Space Invaders Card -->
+            <a href="space-invaders/index.html" class="game-card">
+                <img src="assets/images/spaceinvaders.png" alt="Space Invaders Game" class="game-card-image">
+                <div class="game-card-content">
+                    <h2>Space Invaders</h2>
+                    <p>Defend Earth from waves of alien invaders in this iconic pixel-art shooter. Use your shields and quick reflexes to survive the escalating alien assault.</p>
+                </div>
+            </a>
+
+            <!-- Cities Quiz Card -->
+            <a href="cities/capitals.html" class="game-card">
+                <img src="assets/images/capitals.png" alt="Cities Quiz Game" class="game-card-image">
+                <div class="game-card-content">
+                    <h2>Cities Quiz</h2>
+                    <p>Test your geography knowledge with this interactive world capitals quiz. Challenge yourself to match countries with their capital cities.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <img src="assets/images/Dark-default.png" alt="AISLE Partners" class="footer-logo">
+
+            <div class="footer-message">
+                <h3>Aisle Partners</h3>
+                <p>We leverage the latest AI tools to provide solutions fast.</p>
+                <p>This entire showcase was built in under 90 minutes using AI-powered development workflows and our expertise in rapid prototyping.</p>
+                <p class="footer-tagline">AI Strategy. Leverage. Execution.</p>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Aisle Partners. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

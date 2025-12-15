@@ -6,6 +6,8 @@ body {
     background: #000;
     color: #0f0;
     user-select: none;
+    overscroll-behavior: none; /* Prevent pull-to-refresh on mobile */
+    overflow-x: hidden;
 }
 
 /* Arcade title styling */
@@ -145,22 +147,105 @@ canvas {
 
 /* Mobile responsiveness */
 @media (max-width: 640px) {
+    body {
+        font-size: 0.75rem;
+    }
+
     .arcade-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
     }
 
     .arcade-button {
-        font-size: 1.2rem;
-        padding: 1rem 2rem;
+        font-size: 0.875rem;
+        padding: 0.75rem 1.5rem;
     }
 
-    #gameOverScreen h2 {
-        font-size: 3rem;
+    #gameOverScreen h2,
+    #startScreen h2 {
+        font-size: 2rem;
     }
 
-    #finalScore {
+    #finalScore,
+    #levelScore {
+        font-size: 2rem;
+    }
+
+    #startScreen .space-y-2 p {
+        font-size: 0.75rem;
+    }
+
+    #startScreen .text-xl {
+        font-size: 1rem;
+    }
+
+    /* Adjust score display for mobile */
+    #score, #highScore, #lives, #level {
+        font-size: 1rem;
+    }
+
+    .text-green-400.text-sm {
+        font-size: 0.625rem;
+    }
+
+    /* Make pause button more accessible on mobile */
+    #mobilePauseButton {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    #mobilePauseButton button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        box-shadow: 0 0 15px #ff0, 0 0 30px #ff0;
+    }
+
+    /* Reduce padding for mobile */
+    body > div {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Stack score elements more compactly */
+    .flex.justify-between.items-center {
+        font-size: 0.75rem;
+    }
+
+    /* Reduce title margin */
+    .text-center.mb-6 {
+        margin-bottom: 1rem;
+    }
+
+    .text-center.mt-6 {
+        margin-top: 1rem;
+    }
+}
+
+/* Tablet responsiveness */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .arcade-title {
         font-size: 2.5rem;
     }
+
+    .arcade-button {
+        font-size: 1rem;
+        padding: 0.875rem 1.75rem;
+    }
+
+    #gameOverScreen h2,
+    #startScreen h2 {
+        font-size: 3rem;
+    }
+}
+
+/* Ensure canvas is touch-friendly */
+canvas {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    max-height: 70vh; /* Prevent canvas from being too tall on mobile */
+    height: auto;
+    object-fit: contain;
 }
 
 /* Overlay screens */

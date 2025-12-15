@@ -40,6 +40,13 @@ const UFO_SPAWN_INTERVAL = 15000; // 15 seconds
 const keys = {};
 let canShoot = true;
 
+// Touch input handling
+let touchStartX = 0;
+let touchCurrentX = 0;
+let isTouching = false;
+let lastTouchShoot = 0;
+const TOUCH_SHOOT_COOLDOWN = 300;
+
 // Audio context for sound effects
 let audioContext;
 let sounds = {};
@@ -102,11 +109,24 @@ class Player {
     }
 
     move() {
+        // Keyboard controls
         if (keys['ArrowLeft'] && this.x > 0) {
             this.x -= this.speed;
         }
         if (keys['ArrowRight'] && this.x + this.width < canvas.width) {
             this.x += this.speed;
+        }
+
+        // Touch controls - follow touch position
+        if (isTouching) {
+            const targetX = touchCurrentX - this.width / 2;
+            const clampedX = Math.max(0, Math.min(targetX, canvas.width - this.width));
+
+            // Smooth movement towards touch position
+            const diff = clampedX - this.x;
+            if (Math.abs(diff) > 2) {
+                this.x += diff * 0.2; // Smooth interpolation
+            }
         }
     }
 
@@ -689,11 +709,59 @@ document.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
+// Touch event listeners
+canvas.addEventListener('touchstart', (e) => {
+    if (gameState !== 'playing') return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+
+    touchStartX = (touch.clientX - rect.left) * scaleX;
+    touchCurrentX = touchStartX;
+    isTouching = true;
+
+    // Shoot on tap
+    const now = Date.now();
+    if (now - lastTouchShoot > TOUCH_SHOOT_COOLDOWN) {
+        player.shoot();
+        lastTouchShoot = now;
+    }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+    if (gameState !== 'playing' || !isTouching) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+
+    touchCurrentX = (touch.clientX - rect.left) * scaleX;
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    isTouching = false;
+}, { passive: false });
+
+canvas.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    isTouching = false;
+}, { passive: false });
+
 document.getElementById('startButton').addEventListener('click', () => {
     initAudio();
     document.getElementById('startScreen').classList.add('hidden');
     initNewGame();
     gameState = 'playing';
+
+    // Prevent body scrolling on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+
     gameLoop();
 });
 
@@ -712,5 +780,51 @@ document.getElementById('nextLevelButton').addEventListener('click', () => {
     gameLoop();
 });
 
+// Detect touch device and update UI
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+}
+
+function updateUIForDevice() {
+    const isTouch = isTouchDevice();
+
+    // Toggle instructions visibility
+    document.getElementById('desktopInstructions').classList.toggle('hidden', isTouch);
+    document.getElementById('mobileInstructions').classList.toggle('hidden', !isTouch);
+    document.getElementById('startDesktopInstructions').classList.toggle('hidden', isTouch);
+    document.getElementById('startMobileInstructions').classList.toggle('hidden', !isTouch);
+
+    // Show mobile pause button
+    if (isTouch) {
+        document.getElementById('mobilePauseButton').classList.remove('hidden');
+    }
+}
+
+// Mobile pause button handler
+document.getElementById('mobilePauseButton').addEventListener('click', () => {
+    if (gameState === 'playing') {
+        gameState = 'paused';
+        document.getElementById('pauseScreen').classList.remove('hidden');
+    } else if (gameState === 'paused') {
+        gameState = 'playing';
+        document.getElementById('pauseScreen').classList.add('hidden');
+        gameLoop();
+    }
+});
+
+// Update pause screen for mobile
+if (isTouchDevice()) {
+    const pauseScreen = document.getElementById('pauseScreen');
+    pauseScreen.innerHTML = `
+        <div class="text-center">
+            <h2 class="text-5xl font-bold text-yellow-500 mb-4 arcade-title">PAUSED</h2>
+            <p class="text-green-400 text-xl">Tap <span class="text-white font-bold">PAUSE</span> button to resume</p>
+        </div>
+    `;
+}
+
 // Initialize
+updateUIForDevice();
 updateUI();

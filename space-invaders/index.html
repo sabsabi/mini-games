@@ -45,8 +45,18 @@
         </div>
 
         <!-- Instructions -->
-        <div class="text-center mt-6 text-green-400 text-sm">
+        <div id="desktopInstructions" class="text-center mt-6 text-green-400 text-sm">
             <p><span class="font-bold">← →</span> Move &nbsp;|&nbsp; <span class="font-bold">SPACE</span> Shoot &nbsp;|&nbsp; <span class="font-bold">P</span> Pause</p>
+        </div>
+        <div id="mobileInstructions" class="text-center mt-6 text-green-400 text-sm hidden">
+            <p><span class="font-bold">TOUCH & DRAG</span> to Move &nbsp;|&nbsp; <span class="font-bold">TAP</span> to Shoot</p>
+        </div>
+
+        <!-- Mobile Pause Button -->
+        <div id="mobilePauseButton" class="fixed bottom-4 right-4 z-30 hidden">
+            <button class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 text-xl arcade-button">
+                PAUSE
+            </button>
         </div>
 
     </div>
@@ -55,11 +65,20 @@
     <div id="startScreen" class="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50">
         <div class="text-center">
             <h2 class="text-6xl font-bold text-green-500 mb-8 arcade-title">SPACE INVADERS</h2>
-            <div class="mb-8 text-green-400 text-left max-w-md mx-auto space-y-2">
+            <div id="startDesktopInstructions" class="mb-8 text-green-400 text-left max-w-md mx-auto space-y-2">
                 <p class="text-xl mb-4 text-center">HOW TO PLAY</p>
                 <p>• Use <span class="text-white font-bold">← →</span> arrow keys to move</p>
                 <p>• Press <span class="text-white font-bold">SPACEBAR</span> to shoot</p>
                 <p>• Press <span class="text-white font-bold">P</span> to pause</p>
+                <p>• Destroy all aliens to win</p>
+                <p>• Don't let aliens reach the bottom</p>
+                <p>• You have <span class="text-white font-bold">3 lives</span></p>
+            </div>
+            <div id="startMobileInstructions" class="mb-8 text-green-400 text-left max-w-md mx-auto space-y-2 hidden">
+                <p class="text-xl mb-4 text-center">HOW TO PLAY</p>
+                <p>• <span class="text-white font-bold">TOUCH & DRAG</span> on screen to move</p>
+                <p>• <span class="text-white font-bold">TAP</span> anywhere to shoot</p>
+                <p>• Use <span class="text-white font-bold">PAUSE BUTTON</span> to pause</p>
                 <p>• Destroy all aliens to win</p>
                 <p>• Don't let aliens reach the bottom</p>
                 <p>• You have <span class="text-white font-bold">3 lives</span></p>

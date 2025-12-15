@@ -49,12 +49,15 @@
             <p><span class="font-bold">← →</span> Move &nbsp;|&nbsp; <span class="font-bold">SPACE</span> Shoot &nbsp;|&nbsp; <span class="font-bold">P</span> Pause</p>
         </div>
         <div id="mobileInstructions" class="text-center mt-6 text-green-400 text-sm hidden">
-            <p><span class="font-bold">TOUCH & DRAG</span> to Move &nbsp;|&nbsp; <span class="font-bold">TAP</span> to Shoot</p>
+            <p><span class="font-bold">TOUCH & DRAG</span> to Move &nbsp;|&nbsp; <span class="font-bold">TAP</span> to Shoot &nbsp;|&nbsp; <span class="font-bold">TILT</span> for Motion Control</p>
         </div>
 
-        <!-- Mobile Pause Button -->
-        <div id="mobilePauseButton" class="fixed bottom-4 right-4 z-30 hidden">
-            <button class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 text-xl arcade-button">
+        <!-- Mobile Control Buttons -->
+        <div id="mobileControls" class="fixed bottom-4 right-4 z-30 hidden flex flex-col gap-2">
+            <button id="tiltToggle" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 text-sm arcade-button">
+                TILT: OFF
+            </button>
+            <button id="mobilePauseButton" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 text-xl arcade-button">
                 PAUSE
             </button>
         </div>
@@ -78,6 +81,7 @@
                 <p class="text-xl mb-4 text-center">HOW TO PLAY</p>
                 <p>• <span class="text-white font-bold">TOUCH & DRAG</span> on screen to move</p>
                 <p>• <span class="text-white font-bold">TAP</span> anywhere to shoot</p>
+                <p>• <span class="text-white font-bold">TILT BUTTON</span> enables motion control</p>
                 <p>• Use <span class="text-white font-bold">PAUSE BUTTON</span> to pause</p>
                 <p>• Destroy all aliens to win</p>
                 <p>• Don't let aliens reach the bottom</p>

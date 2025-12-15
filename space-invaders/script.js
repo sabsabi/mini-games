@@ -47,9 +47,16 @@ let isTouching = false;
 let lastTouchShoot = 0;
 const TOUCH_SHOOT_COOLDOWN = 300;
 
+// Tilt control handling
+let tiltEnabled = false;
+let tiltAngle = 0;
+let tiltSensitivity = 3; // Higher = more sensitive
+const TILT_DEADZONE = 5; // Degrees of tilt to ignore
+
 // Audio context for sound effects
 let audioContext;
 let sounds = {};
+let audioUnlocked = false;
 
 // Initialize audio
 function initAudio() {
@@ -62,28 +69,69 @@ function initAudio() {
         sounds.explosion = () => playTone(100, 0.2, 'sawtooth');
         sounds.ufoSound = () => playTone(300, 0.1, 'sine');
         sounds.alienMove = () => playTone(80, 0.05, 'square');
+
+        // Unlock audio for iOS Safari
+        unlockAudioContext();
     } catch (e) {
         console.log('Audio not supported');
+    }
+}
+
+// Unlock audio context for iOS Safari
+async function unlockAudioContext() {
+    if (!audioContext) return;
+
+    if (audioContext.state === 'suspended') {
+        try {
+            await audioContext.resume();
+        } catch (e) {
+            console.log('Could not resume audio context');
+        }
+    }
+
+    // Play a silent sound to unlock audio on iOS
+    if (!audioUnlocked) {
+        const buffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+        audioUnlocked = true;
     }
 }
 
 function playTone(frequency, duration, type = 'sine') {
     if (!audioContext) return;
 
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    // Resume audio context if suspended (for iOS)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().then(() => {
+            playToneInternal(frequency, duration, type);
+        });
+    } else {
+        playToneInternal(frequency, duration, type);
+    }
+}
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+function playToneInternal(frequency, duration, type = 'sine') {
+    try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
 
-    oscillator.frequency.value = frequency;
-    oscillator.type = type;
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
 
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
 
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + duration);
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+    } catch (e) {
+        console.log('Error playing sound:', e);
+    }
 }
 
 // Player class
@@ -118,7 +166,7 @@ class Player {
         }
 
         // Touch controls - follow touch position
-        if (isTouching) {
+        if (isTouching && !tiltEnabled) {
             const targetX = touchCurrentX - this.width / 2;
             const clampedX = Math.max(0, Math.min(targetX, canvas.width - this.width));
 
@@ -127,6 +175,15 @@ class Player {
             if (Math.abs(diff) > 2) {
                 this.x += diff * 0.2; // Smooth interpolation
             }
+        }
+
+        // Tilt controls
+        if (tiltEnabled && Math.abs(tiltAngle) > TILT_DEADZONE) {
+            const moveAmount = (tiltAngle / 45) * this.speed * tiltSensitivity;
+            this.x += moveAmount;
+
+            // Keep player in bounds
+            this.x = Math.max(0, Math.min(this.x, canvas.width - this.width));
         }
     }
 
@@ -714,6 +771,11 @@ canvas.addEventListener('touchstart', (e) => {
     if (gameState !== 'playing') return;
     e.preventDefault();
 
+    // Unlock audio on first touch (for iOS)
+    if (audioContext && !audioUnlocked) {
+        unlockAudioContext();
+    }
+
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -780,6 +842,75 @@ document.getElementById('nextLevelButton').addEventListener('click', () => {
     gameLoop();
 });
 
+// Request motion sensor permission (required for iOS 13+)
+async function requestMotionPermission() {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+            const permission = await DeviceOrientationEvent.requestPermission();
+            if (permission === 'granted') {
+                enableTiltControls();
+                return true;
+            } else {
+                alert('Motion sensor permission denied. You can still use touch controls.');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error requesting motion permission:', error);
+            return false;
+        }
+    } else {
+        // Not iOS 13+ or permission not required
+        enableTiltControls();
+        return true;
+    }
+}
+
+// Enable tilt controls
+function enableTiltControls() {
+    tiltEnabled = true;
+    window.addEventListener('deviceorientation', handleOrientation);
+
+    // Update UI to show tilt is active
+    const tiltButton = document.getElementById('tiltToggle');
+    if (tiltButton) {
+        tiltButton.textContent = 'TILT: ON';
+        tiltButton.classList.remove('bg-gray-600');
+        tiltButton.classList.add('bg-green-600');
+    }
+}
+
+// Disable tilt controls
+function disableTiltControls() {
+    tiltEnabled = false;
+    tiltAngle = 0;
+    window.removeEventListener('deviceorientation', handleOrientation);
+
+    // Update UI
+    const tiltButton = document.getElementById('tiltToggle');
+    if (tiltButton) {
+        tiltButton.textContent = 'TILT: OFF';
+        tiltButton.classList.remove('bg-green-600');
+        tiltButton.classList.add('bg-gray-600');
+    }
+}
+
+// Handle device orientation
+function handleOrientation(event) {
+    if (!tiltEnabled) return;
+
+    // Use gamma (left/right tilt) for movement
+    // gamma is -90 to 90, negative = left, positive = right
+    tiltAngle = event.gamma || 0;
+
+    // Handle landscape mode (use beta instead)
+    if (Math.abs(window.orientation) === 90) {
+        tiltAngle = event.beta || 0;
+        if (window.orientation === -90) {
+            tiltAngle = -tiltAngle;
+        }
+    }
+}
+
 // Detect touch device and update UI
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
@@ -796,9 +927,9 @@ function updateUIForDevice() {
     document.getElementById('startDesktopInstructions').classList.toggle('hidden', isTouch);
     document.getElementById('startMobileInstructions').classList.toggle('hidden', !isTouch);
 
-    // Show mobile pause button
+    // Show mobile control buttons
     if (isTouch) {
-        document.getElementById('mobilePauseButton').classList.remove('hidden');
+        document.getElementById('mobileControls').classList.remove('hidden');
     }
 }
 
@@ -811,6 +942,15 @@ document.getElementById('mobilePauseButton').addEventListener('click', () => {
         gameState = 'playing';
         document.getElementById('pauseScreen').classList.add('hidden');
         gameLoop();
+    }
+});
+
+// Tilt toggle button handler
+document.getElementById('tiltToggle').addEventListener('click', async () => {
+    if (!tiltEnabled) {
+        await requestMotionPermission();
+    } else {
+        disableTiltControls();
     }
 });
 
